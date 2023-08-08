@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-import parentheses
+from . import parentheses
 
 
 @dataclass
@@ -104,8 +104,19 @@ def convert(parameter: parentheses.Parameter) -> Parameter:
     return Optional(parameters)
 
 
-def parse(content: str) -> Rule:
+def parse_rule(content: str) -> Rule:
     return [convert(p) for p in parentheses.parse(content)[0]]
 
 
-print(parse("< access-list > access_list_name [ < line > line_number ] < extended > { < deny > | < permit > } protocol_argument [ user_argument ] [ security_group_argument ] source_address_argument [ security_group_argument ] dest_address_argument [ < log > [ [ level ] [ < interval > secs ] | < disable > | < default > ] ] [ < time-range > time_range_name ] [ < inactive > ] "))
+def parse_rules(content: str) -> list[Rule]:
+    rules = []
+
+    for line in content.splitlines():
+        line = line.strip()
+
+        if not line:
+            continue
+
+        rules.append(parse_rule(line))
+
+    return rules
