@@ -18,15 +18,9 @@ class Union:
     members: list[list["Parameter"]]
 
 
-@dataclass
-class Optional:
-    parameters: list["Parameter"]
-
-
 Parameter = (
     Literal
     | Positional
-    | Optional
     | Union
 )
 
@@ -36,72 +30,71 @@ Rule = list[Parameter]
 
 class Token:
     LITERAL_PARENTHESES = ("<", ">")
-    OPTIONAL_PARENTHESES = ("[", "]")
+    OPTIONAL_UNION_PARENTHESES = ("[", "]")
     UNION_DELIMITER = "|"
     UNION_PARENTHESES = ("{", "}")
 
 
+def conver_positional_literal(literal: parentheses.Literal) -> Positional:
+    return Positional(literal.value)
+
+
+def convert_literal_group(group: parentheses.Group) -> Literal:
+    assert len(group.children) == 1
+
+    first_child = group.children[0]
+
+    assert isinstance(first_child, parentheses.Literal)
+    
+    return Literal(first_child.value)
+
+
+def convert_union_group(group: parentheses.Group, optional: bool) -> Union:
+    members = []
+    member = []
+
+    for child in group.children:
+        if isinstance(child, parentheses.Literal):
+                if child.value == Token.UNION_DELIMITER:
+                    if len(member) == 0:
+                        raise ValueError
+
+                    members.append(member)
+                    member = []
+                    continue
+
+        converted = convert(child)
+        member.append(converted)
+
+    if len(member) == 0:
+        raise ValueError
+
+    if len(members) == 0 and not optional:
+        raise ValueError
+
+    members.append(member)
+
+    if optional:
+        members.append([])
+
+    return Union(members)
+
+
 def convert(parameter: parentheses.Parameter) -> Parameter:
     if isinstance(parameter, parentheses.Literal):
-        return Positional(parameter.value)
+        return conver_positional_literal(parameter)
 
     assert isinstance(parameter, parentheses.Group)
-    
+
     if parameter.parentheses == Token.LITERAL_PARENTHESES:
-        assert len(parameter.children) == 1
-
-        first_child = parameter.children[0]
-
-        assert isinstance(first_child, parentheses.Literal)
-    
-        return Literal(first_child.value)
+        return convert_literal_group(parameter)
 
     if parameter.parentheses == Token.UNION_PARENTHESES:
-        members = []
-        member = []
+        return convert_union_group(parameter, False)
 
-        for child in parameter.children:
-            if isinstance(child, parentheses.Literal):
-                    if child.value == Token.UNION_DELIMITER:
-                        if len(member) == 0:
-                            raise ValueError
+    assert parameter.parentheses == Token.OPTIONAL_UNION_PARENTHESES
 
-                        members.append(member)
-                        member = []
-                        continue
-            
-            converted = convert(child)
-            member.append(converted)
-
-        if len(member) == 0:
-            raise ValueError
-        
-        if len(members) == 0:
-            raise ValueError
-        
-        members.append(member)
-
-        return Union(members)
-
-    assert parameter.parentheses == Token.OPTIONAL_PARENTHESES
-
-    is_optional_union = False
-    parameters = None
-
-    for child in parameter.children:
-        if isinstance(child, parentheses.Literal):
-            if child.value == Token.UNION_DELIMITER:
-                is_optional_union = True
-                break
-
-    if is_optional_union:
-        cast = parentheses.Group(Token.UNION_PARENTHESES, parameter.children)
-        converted = convert(cast)
-        parameters = [converted]
-    else:
-        parameters = [convert(c) for c in parameter.children]
-
-    return Optional(parameters)
+    return convert_union_group(parameter, True)
 
 
 def parse_rule(content: str) -> Rule:
