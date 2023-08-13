@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from . import command_rule
 
 
@@ -49,5 +47,4 @@ def flatten(union: command_rule.Union) -> command_rule.Union:
         if step is result:
             return result
 
-        pprint(result)
         result = step
