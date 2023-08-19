@@ -1,7 +1,14 @@
+from typing import Iterator
+
+from ..utility import find
 from . import command_rule
 
 
-def explode(
+Matchable = command_rule.Literal | command_rule.Positional
+Syntax = list[Matchable]
+
+
+def split(
     union: command_rule.Union
 ) -> tuple[list[command_rule.Parameter], list[command_rule.Parameter]]:
     if len(union.members) == 2:
@@ -26,7 +33,7 @@ def lift(outer_union: command_rule.Union) -> command_rule.Union:
 
     member_index, parameter_index = indices
     inner_union = outer_union.members[member_index][parameter_index]
-    a, b = explode(inner_union)
+    a, b = split(inner_union)
     member = outer_union.members[member_index]
     members = (
         outer_union.members[:member_index]
@@ -48,3 +55,24 @@ def flatten(union: command_rule.Union) -> command_rule.Union:
             return result
 
         result = step
+
+
+def generate(
+    rule: command_rule.Rule
+) -> Iterator[Syntax]:
+    if len(rule) == 0:
+        yield []
+        return
+
+    found = find(lambda x: isinstance(x, command_rule.Union), rule)
+
+    if not found:
+        yield [rule]
+        return
+
+    index, union = found
+    union = flatten(union)
+
+    for member in union.members:
+        for rest in generate(rule[index + 1:]):
+            yield rule[:index] + member + rest
