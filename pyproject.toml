@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "asa-config"
+version = "0.1.0"
+description = "A toolbelt for parsing Cisco ASA configuration scripts and emitting configuration objects"
+authors = ["hacksparr0w"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

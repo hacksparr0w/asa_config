@@ -1,18 +1,24 @@
 from dataclasses import dataclass
 
 
-Parentheses = tuple[str, str]
+__all__ = (
+    "Group",
+    "Literal",
+    "Parameter",
+    "Parentheses",
+
+    "read"
+)
 
 
-PARENTHESES = [
+_PARENTHESES = (
     ("[", "]"),
     ("{", "}"),
     ("<", ">")
-]
+)
 
 
-class Token:
-    SPACE = " "
+Parentheses = tuple[str, str]
 
 
 @dataclass
@@ -22,14 +28,14 @@ class Literal:
 
 @dataclass
 class Group:
-    parentheses: tuple[str, str]
+    parentheses: Parentheses
     children: list["Parameter"]
 
 
 Parameter = Literal | Group
 
 
-def parse(
+def read(
     content: str,
     start_index: int = 0,
     current_parentheses: Parentheses | None = None
@@ -38,7 +44,7 @@ def parse(
     buffer = ""
     current_index = start_index
 
-    def complete_literal() -> None:
+    def finalize_literal() -> None:
         nonlocal buffer
 
         if len(buffer) > 0:
@@ -56,20 +62,20 @@ def parse(
     while current_index < len(content):
         character = content[current_index]
 
-        if character == Token.SPACE:
-            complete_literal()
+        if character == " ":
+            finalize_literal()
         else:
             matched = False
 
-            for parentheses_candidate in PARENTHESES:
+            for parentheses_candidate in _PARENTHESES:
                 opening_parenthesis, closing_parenthesis = (
                     parentheses_candidate
                 )
 
                 if character == opening_parenthesis:
-                    complete_literal()
+                    finalize_literal()
 
-                    children, current_index = parse(
+                    children, current_index = read(
                         content,
                         current_index,
                         parentheses_candidate
@@ -85,7 +91,7 @@ def parse(
                     if current_parentheses != parentheses_candidate:
                         raise ValueError
 
-                    complete_literal()
+                    finalize_literal()
 
                     return result, current_index
 
@@ -97,6 +103,6 @@ def parse(
     if current_parentheses is not None:
         raise ValueError
 
-    complete_literal()
+    finalize_literal()
 
     return result, current_index - 1
