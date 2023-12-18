@@ -18,12 +18,20 @@ __all__ = (
 )
 
 
-_DEFAULT_RULE_FILE = Path(__file__).parent.parent / "data" / "rules.txt"
+_DEFAULT_RULE_FILE = (
+    Path(__file__).parent.parent /
+    "data" /
+    "default_rules.txt"
+)
 
 
 @dataclass
 class Literal:
     value: str
+
+    @staticmethod
+    def matches(argument: str, literal: Literal) -> bool:
+        return argument.lower() == literal.value.lower()
 
 
 @dataclass
