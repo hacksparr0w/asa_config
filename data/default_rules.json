@@ -1,5 +1,6 @@
 [
     {
+        "type": "object",
         "name": "access-list",
         "parameters": [
             {
@@ -15,7 +16,7 @@
                     },
                     {
                         "type": "positional",
-                        "name": "line_number",
+                        "name": "line",
                         "value": [
                             { "type": "integer" }
                         ]
@@ -44,8 +45,27 @@
                 ]
             },
             {
-                "type": "positional",
-                "name": "protocol"
+                "type": "union",
+                "members": [
+                    [
+                        {
+                            "type": "literal",
+                            "value": "tcp"
+                        }
+                    ],
+                    [
+                        {
+                            "type": "literal",
+                            "value": "udp"
+                        }
+                    ],
+                    [
+                        {
+                            "type": "literal",
+                            "value": "sctp"
+                        }
+                    ]
+                ]
             },
             {
                 "type": "optional",
@@ -387,7 +407,7 @@
                                             "type": "positional",
                                             "name": "level",
                                             "value": [
-                                                { "type": "int" }
+                                                { "type": "integer" }
                                             ]
                                         }
                                     ]
@@ -400,7 +420,7 @@
                                     "type": "positional",
                                     "name": "secs",
                                     "value": [
-                                        { "type": "int" }
+                                        { "type": "integer" }
                                     ]
                                 }
                             ],
