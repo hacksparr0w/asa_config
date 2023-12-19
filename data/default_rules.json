@@ -1,0 +1,448 @@
+[
+    {
+        "name": "access-list",
+        "parameters": [
+            {
+                "type": "positional",
+                "name": "access_list_name"
+            },
+            {
+                "type": "optional",
+                "parameters": [
+                    {
+                        "type": "literal",
+                        "value": "line"
+                    },
+                    {
+                        "type": "positional",
+                        "name": "line_number",
+                        "value": [
+                            { "type": "integer" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "literal",
+                "value": "extended"
+            },
+            {
+                "type": "union",
+                "members": [
+                    [
+                        {
+                            "type": "literal",
+                            "value": "deny"
+                        }
+                    ],
+                    [
+                        {
+                            "type": "literal",
+                            "value": "permit"
+                        }
+                    ]
+                ]
+            },
+            {
+                "type": "positional",
+                "name": "protocol"
+            },
+            {
+                "type": "optional",
+                "parameters": [
+                    {
+                        "type": "positional",
+                        "name": "user",
+                        "value": [
+                            {
+                                "type": "object",
+                                "name": "object-group-user",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "user_obj_grp_id"
+                                    }
+                                ] 
+                            },
+                            {
+                                "type": "object",
+                                "name": "user",
+                                "parameters": [
+                                    {
+                                        "type": "union",
+                                        "members": [
+                                            [
+                                                {
+                                                    "type": "positional",
+                                                    "name": "name"
+                                                }
+                                            ],
+                                            [
+                                                {
+                                                    "type": "literal",
+                                                    "value": "any"
+                                                }
+                                            ],
+                                            [
+                                                {
+                                                    "type": "literal",
+                                                    "value": "none"
+                                                }
+                                            ]
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "user-group",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "user_group_name"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "optional",
+                "parameters": [
+                    {
+                        "type": "positional",
+                        "name":  "source_security_group_argument",
+                        "value": [
+                            {
+                                "type": "object",
+                                "name": "object-group-security",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "security_obj_grp_id"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "security-group",
+                                "parameters": [
+                                    {
+                                        "type": "union",
+                                        "members": [
+                                            [
+                                                {
+                                                    "type": "literal",
+                                                    "value": "name"
+                                                },
+                                                {
+                                                    "type": "positional",
+                                                    "name": "security_grp_id"
+                                                }
+                                            ],
+                                            [
+                                                {
+                                                    "type": "literal",
+                                                    "value": "tag"
+                                                },
+                                                {
+                                                    "type": "positional",
+                                                    "name": " security_grp_tag"
+                                                }
+                                            ]
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "positional",
+                "name": "source_address_argument"
+            },
+            {
+                "type": "optional",
+                "parameters": [
+                    {
+                        "type": "positional",
+                        "name": "source_port_argument",
+                        "value": [
+                            {
+                                "type": "object",
+                                "name": "lt",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "port"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "gt",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "port"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "eq",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "port"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "neq",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "port"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "range",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "start"
+                                    },
+                                    {
+                                        "type": "positional",
+                                        "name": "stop"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "object-group",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "service_grp_id"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "optional",
+                "parameters": [
+                    {
+                        "type": "positional",
+                        "name":  "destination_security_group_argument",
+                        "value": [
+                            {
+                                "type": "object",
+                                "name": "object-group-security",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "security_obj_grp_id"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "security-group",
+                                "parameters": [
+                                    {
+                                        "type": "union",
+                                        "members": [
+                                            [
+                                                {
+                                                    "type": "literal",
+                                                    "value": "name"
+                                                },
+                                                {
+                                                    "type": "positional",
+                                                    "name": "security_grp_id"
+                                                }
+                                            ],
+                                            [
+                                                {
+                                                    "type": "literal",
+                                                    "value": "tag"
+                                                },
+                                                {
+                                                    "type": "positional",
+                                                    "name": " security_grp_tag"
+                                                }
+                                            ]
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "positional",
+                "name": "destination_address_argument"
+            },
+            {
+                "type": "optional",
+                "parameters": [
+                    {
+                        "type": "positional",
+                        "name": "destination_port_argument",
+                        "value": [
+                            {
+                                "type": "object",
+                                "name": "lt",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "port"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "gt",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "port"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "eq",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "port"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "neq",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "port"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "range",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "start"
+                                    },
+                                    {
+                                        "type": "positional",
+                                        "name": "stop"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "name": "object-group",
+                                "parameters": [
+                                    {
+                                        "type": "positional",
+                                        "name": "service_grp_id"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "optional",
+                "parameters": [
+                    {
+                        "type": "positional",
+                        "name": "log"
+                    },
+                    {
+                        "type": "union",
+                        "members": [
+                            [
+                                {
+                                    "type": "optional",
+                                    "parameters": [
+                                        {
+                                            "type": "positional",
+                                            "name": "level",
+                                            "value": [
+                                                { "type": "int" }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "literal",
+                                    "value": "interval"
+                                },
+                                {
+                                    "type": "positional",
+                                    "name": "secs",
+                                    "value": [
+                                        { "type": "int" }
+                                    ]
+                                }
+                            ],
+                            [
+                                {
+                                    "type": "literal",
+                                    "value": "disable"
+                                }
+                            ],
+                            [
+                                {
+                                    "type": "literal",
+                                    "value": "default"
+                                }
+                            ],
+                            []
+                        ] 
+                    }
+                ]
+            },
+            {
+                "type": "optional",
+                "parameters": [
+                    {
+                        "type": "literal",
+                        "value": "time-range"
+                    },
+                    {
+                        "type": "positional",
+                        "name": "time_range_name"
+                    }
+                ]
+            },
+            {
+                "type": "optional",
+                "parameters": [
+                    {
+                        "type": "literal",
+                        "value": "inactive"
+                    }
+                ]
+            }
+        ]
+    }
+]

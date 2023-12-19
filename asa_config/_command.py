@@ -56,6 +56,9 @@ def _find_candidate_rules(
     for rule in rules:
         score = evaluate(rule)
 
+        if score == 0:
+            continue
+
         if score > best_score:
             best_matches = [rule]
             best_score = score
@@ -216,20 +219,25 @@ def _transform_argument_group(
     rules: list[Rule]
 ) -> list[MatchResult | str]:
     argument_buffer = []
-    remaining_arguments = [*argument_group]
+    remaining_arguments = argument_group.copy()
     transformed_arguments = []
 
     while remaining_arguments:
+        print(remaining_arguments)
+        breakpoint()
         try:
             match = _match(remaining_arguments, rules)
 
             transformed_arguments.append(match)
 
             if argument_buffer:
-                remaining_arguments.extend(argument_buffer)
+                remaining_arguments = argument_buffer
                 argument_buffer = []
+            else:
+                remaining_arguments = []
         except RuleNotFoundError:
-            transformed_arguments.append(argument_group[0])
+            print("RuleNotFoundError", remaining_arguments)
+            transformed_arguments.append(remaining_arguments[0])
             remaining_arguments.pop(0)
         except TooManyArgumentsError:
             argument = remaining_arguments.pop()
@@ -279,6 +287,7 @@ def _match_positionals(
     rule: Rule,
     literal_match_indices: list[tuple[int, int]]
 ) -> MatchResult:
+    print("match_positionals", arguments, rule)
     def get_remaining_required_positionals(current_index: int = 0) -> int:
         total = 0
 
@@ -340,30 +349,25 @@ def _match_positionals(
 
 
 def _match(arguments: list[str], rules: list[Rule]) -> MatchResult:
-    rules = _find_candidate_rules(arguments, rules)
+    candidates = _find_candidate_rules(arguments, rules)
 
-    if not rules:
+    print("candidates", arguments, candidates)
+
+    if not candidates:
         raise RuleNotFoundError
 
-    rules = list(
+    candidates = list(
         filter(
             lambda rule: _discriminate_candidate_rule(arguments, rule),
-            rules
+            candidates
         )
     )
 
-    if not rules:
+    if not candidates:
         raise RuleNotFoundError
 
-    print("before prune:")
-    print(rules[1])
-
-    rules = list(map(lambda rule: _prune_unions(arguments, rule), rules))
-
-    print("after prune:")
-    print(rules[1])
-
-    matches = list(map(lambda rule: _match_literals(arguments, rule), rules))
+    candidates = list(map(lambda rule: _prune_unions(arguments, rule), candidates))
+    matches = list(map(lambda rule: _match_literals(arguments, rule), candidates))
 
     for index, (rule, literal_match_indices) in enumerate(matches):
         assert _is_flat(rule)
