@@ -181,7 +181,19 @@
             },
             {
                 "type": "positional",
-                "name": "source_address_argument"
+                "name": "source_address_argument",
+                "value": [
+                    {
+                        "type": "object",
+                        "name": "object-group",
+                        "parameters": [
+                            {
+                                "type": "positional",
+                                "name": "nw_grp_id"
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 "type": "optional",
@@ -196,7 +208,10 @@
                                 "parameters": [
                                     {
                                         "type": "positional",
-                                        "name": "port"
+                                        "name": "port",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     }
                                 ]
                             },
@@ -206,7 +221,10 @@
                                 "parameters": [
                                     {
                                         "type": "positional",
-                                        "name": "port"
+                                        "name": "port",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     }
                                 ]
                             },
@@ -216,7 +234,10 @@
                                 "parameters": [
                                     {
                                         "type": "positional",
-                                        "name": "port"
+                                        "name": "port",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     }
                                 ]
                             },
@@ -226,7 +247,10 @@
                                 "parameters": [
                                     {
                                         "type": "positional",
-                                        "name": "port"
+                                        "name": "port",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     }
                                 ]
                             },
@@ -236,11 +260,17 @@
                                 "parameters": [
                                     {
                                         "type": "positional",
-                                        "name": "start"
+                                        "name": "start",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     },
                                     {
                                         "type": "positional",
-                                        "name": "stop"
+                                        "name": "stop",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     }
                                 ]
                             },
@@ -312,7 +342,19 @@
             },
             {
                 "type": "positional",
-                "name": "destination_address_argument"
+                "name": "destination_address_argument",
+                "value": [
+                    {
+                        "type": "object",
+                        "name": "object-group",
+                        "parameters": [
+                            {
+                                "type": "positional",
+                                "name": "nw_grp_id"
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 "type": "optional",
@@ -327,7 +369,10 @@
                                 "parameters": [
                                     {
                                         "type": "positional",
-                                        "name": "port"
+                                        "name": "port",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     }
                                 ]
                             },
@@ -337,7 +382,10 @@
                                 "parameters": [
                                     {
                                         "type": "positional",
-                                        "name": "port"
+                                        "name": "port",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     }
                                 ]
                             },
@@ -347,7 +395,10 @@
                                 "parameters": [
                                     {
                                         "type": "positional",
-                                        "name": "port"
+                                        "name": "port",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     }
                                 ]
                             },
@@ -357,7 +408,10 @@
                                 "parameters": [
                                     {
                                         "type": "positional",
-                                        "name": "port"
+                                        "name": "port",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     }
                                 ]
                             },
@@ -367,11 +421,17 @@
                                 "parameters": [
                                     {
                                         "type": "positional",
-                                        "name": "start"
+                                        "name": "start",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     },
                                     {
                                         "type": "positional",
-                                        "name": "stop"
+                                        "name": "stop",
+                                        "value": [
+                                            { "type": "integer" }
+                                        ]
                                     }
                                 ]
                             },
