@@ -168,7 +168,7 @@
                                                 },
                                                 {
                                                     "type": "positional",
-                                                    "name": " security_grp_tag"
+                                                    "name": "security_grp_tag"
                                                 }
                                             ]
                                         ]
@@ -453,8 +453,8 @@
                 "type": "optional",
                 "parameters": [
                     {
-                        "type": "positional",
-                        "name": "log"
+                        "type": "literal",
+                        "value": "log"
                     },
                     {
                         "type": "union",

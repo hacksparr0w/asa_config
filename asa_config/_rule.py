@@ -90,12 +90,11 @@ class ObjectRule(BaseModel):
             for decision in decisions:
                 steps = [s for s, _ in decision]
                 inner = [i for i in steps]
-                from devtools import pprint
                 print(inner)
 
         decision = decisions[0]
 
-        for matches, _ in decision:
+        for matches, arguments in decision:
             for item in matches:
                 if isinstance(item, ObjectRuleLiteralParameterMatch):
                     literals.append(item.value)
