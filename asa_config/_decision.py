@@ -14,7 +14,6 @@ def decision_tree(generators):
             for item in generators[0](*args, **kwargs):
                 result, _, _ = item
 
-                print("bsdf", result)
                 yield (result,)
 
             return
@@ -23,8 +22,6 @@ def decision_tree(generators):
 
         for item in generator(*args, **kwargs):
             result, args, kwargs = item
-
-            print("asdf", result)
 
             for rest in decision_tree(generators)(*args, **kwargs):
                 yield (result, *rest)

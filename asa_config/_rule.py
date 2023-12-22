@@ -86,15 +86,10 @@ class ObjectRule(BaseModel):
         if not decisions:
             raise ObjectRuleParameterMatchError
 
-        if root:
-            for decision in decisions:
-                steps = [s for s, _ in decision]
-                inner = [i for i in steps]
-                print(inner)
-
         decision = decisions[0]
+        remaining_arguments = None
 
-        for matches, arguments in decision:
+        for matches, remaining_arguments in decision:
             for item in matches:
                 if isinstance(item, ObjectRuleLiteralParameterMatch):
                     literals.append(item.value)
@@ -109,7 +104,7 @@ class ObjectRule(BaseModel):
                 literals=literals,
                 positionals=positionals
             ),
-            arguments
+            remaining_arguments
         )
 
 
