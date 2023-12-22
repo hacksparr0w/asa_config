@@ -71,8 +71,7 @@ class ObjectRule(BaseModel):
 
     def match(
         self,
-        arguments: list[str],
-        root: bool = False
+        arguments: list[str]
     ) -> tuple[ObjectRuleMatch, list[str]]:
         literals = []
         positionals = {}
@@ -298,7 +297,7 @@ def match(arguments: list[str], rules: list[ObjectRule]) -> ObjectRuleMatch:
 
     for candidate in candidates:
         try:
-            return candidate.match(arguments, root=True)
+            return candidate.match(arguments)
         except ObjectRuleMatchError as exception:
             error = exception
 
