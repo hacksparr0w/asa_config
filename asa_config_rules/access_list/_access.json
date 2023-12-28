@@ -1,0 +1,17 @@
+{
+  "type": "union",
+  "members": [
+    [
+      {
+        "type": "literal",
+        "value": "deny"
+      }
+    ],
+    [
+      {
+        "type": "literal",
+        "value": "permit"
+      }
+    ]
+  ]
+}

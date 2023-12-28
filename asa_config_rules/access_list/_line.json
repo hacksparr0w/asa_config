@@ -1,0 +1,16 @@
+{
+  "type": "optional",
+  "parameters": [
+    {
+      "type": "literal",
+      "value": "line"
+    },
+    {
+      "type": "positional",
+      "name": "line",
+      "value": [
+        { "type": "integer" }
+      ]
+    }
+  ]
+}

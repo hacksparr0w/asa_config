@@ -1,0 +1,15 @@
+{
+  "type": "positional",
+  "value": [
+    {
+      "type": "object",
+      "name": "object-group",
+      "parameters": [
+        {
+          "type": "positional",
+          "name": "name"
+        }
+      ]
+    }
+  ]
+}
