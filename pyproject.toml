@@ -5,6 +5,7 @@ description = "A toolbelt for parsing Cisco ASA configuration scripts and emitti
 authors = ["hacksparr0w"]
 license = "MIT"
 readme = "README.md"
+include = ["object_rules/**/*"]
 
 [tool.poetry.dependencies]
 python = "^3.12"
