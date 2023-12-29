@@ -1,0 +1,52 @@
+{
+  "$type": "optional",
+  "value": {
+    "$type": "union",
+    "values": [
+      {
+        "$type": "object",
+        "name": "object-group-security",
+        "properties": [
+          {
+            "name": "name",
+            "value": { "$type": "string" }
+          }
+        ]
+      },
+      {
+        "$type": "object",
+        "name": "security-group",
+        "properties": [
+          {
+            "name": "id",
+            "value": {
+              "$type": "union",
+              "values": [
+                {
+                  "$type": "object",
+                  "name": "name",
+                  "properties": [
+                    {
+                      "name": "name",
+                      "value": { "$type": "string" }
+                    }
+                  ]
+                },
+                {
+                  "$type": "object",
+                  "name": "tag",
+                  "properties": [
+                    {
+                      "name": "tag",
+                      "value": { "$type": "string" }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

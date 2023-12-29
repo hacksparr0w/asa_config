@@ -1,0 +1,13 @@
+{
+  "$type": "union",
+  "values": [
+    {
+      "$type": "literal",
+      "value": "deny"
+    },
+    {
+      "$type": "literal",
+      "value": "permit"
+    }
+  ]
+}

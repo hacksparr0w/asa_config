@@ -1,187 +1,169 @@
 from __future__ import annotations
 
-from io import IOBase, StringIO
 from enum import StrEnum, auto
+from io import IOBase, StringIO
 from pathlib import Path
-from typing import Annotated, Literal, Union
+from typing import Annotated, Union, Literal
 
 import jsonref
 
 from pydantic import BaseModel, Field
 
-from ._rule import (
+from ._object import (
+    IntegerRule,
+    LiteralRule,
     ObjectRule,
-    ObjectRuleLiteralParameter,
-    ObjectRulePositionalParameter,
-    ObjectRulePositionalParameterIntegerValue,
-    ObjectRulePositionalParameterObjectValue,
-    ObjectRulePositionalParameterStringValue,
-    ObjectRuleUnionParameter
+    ObjectRuleProperty,
+    OptionalRule,
+    StringRule,
+    TupleRule,
+    UnionRule
 )
 
 
-__all__ = (
-    "JsonObjectRule",
-    "JsonObjectRuleLiteralParameter",
-    "JsonObjectRuleOptionalParameter",
-    "JsonObjectRuleParameter",
-    "JsonObjectRuleParameterType",
-    "JsonObjectRulePositionalParameter",
-    "JsonObjectRulePositionalParameterIntegerValue",
-    "JsonObjectRulePositionalParameterObjectValue",
-    "JsonObjectRulePositionalParameterStringValue",
-    "JsonObjectRulePositionalParameterValue",
-    "JsonObjectRulePositionalParameterValueType",
-    "JsonObjectRuleUnionParameter",
+_DEFAULT_JSON_OBJECT_RULE_DIRECTORY = Path(__file__).parent.parent \
+    / "object_rules"
 
-    "load",
-    "load_all",
-    "load_file"
-)
+_JSON_RULE_TYPE_ALIAS = "$type"
 
 
-_DEFAULT_JSON_RULE_DIRECTORY = Path(__file__).parent.parent \
-    / "asa_config_rules"
-
-
-class JsonObjectRule(BaseModel):
-    name: str
-    parameters: list[JsonObjectRuleParameter]
-
-    def convert(self) -> ObjectRule:
-        return ObjectRule(
-            name=self.name,
-            parameters=[parameter.convert() for parameter in self.parameters]
-        )
-
-
-class JsonObjectRuleParameterType(StrEnum):
+class JsonRuleType(StrEnum):
+    INTEGER = auto()
     LITERAL = auto()
+    OBJECT = auto()
     OPTIONAL = auto()
-    POSITIONAL = auto()
+    STRING = auto()
+    TUPLE = auto()
     UNION = auto()
 
 
-class JsonObjectRulePositionalParameterValueType(StrEnum):
-    INTEGER = auto()
-    OBJECT = auto()
-    STRING = auto()
-
-
-class JsonObjectRuleLiteralParameter(BaseModel):
+class JsonIntegerRule(BaseModel):
     type: Annotated[
-        Literal[JsonObjectRuleParameterType.LITERAL],
-        Field(default=JsonObjectRuleParameterType.LITERAL)
+        Literal[JsonRuleType.INTEGER],
+        Field(
+            alias=_JSON_RULE_TYPE_ALIAS,
+            default=JsonRuleType.INTEGER
+        )
+    ]
+
+    def convert(self) -> ObjectRule:
+        return IntegerRule()
+
+
+class JsonLiteralRule(BaseModel):
+    type: Annotated[
+        Literal[JsonRuleType.LITERAL],
+        Field(
+            alias=_JSON_RULE_TYPE_ALIAS,
+            default=JsonRuleType.LITERAL
+        )
     ]
 
     value: str
 
-    def convert(self) -> ObjectRuleLiteralParameter:
-        return ObjectRuleLiteralParameter(value=self.value)
+    def convert(self) -> ObjectRule:
+        return LiteralRule(value=self.value)
 
 
-class JsonObjectRuleOptionalParameter(BaseModel):
-    type: Annotated[
-        Literal[JsonObjectRuleParameterType.OPTIONAL],
-        Field(default=JsonObjectRuleParameterType.OPTIONAL)
-    ]
+class JsonObjectRuleProperty(BaseModel):
+    name: str
+    value: JsonRule
 
-    parameters: list[JsonObjectRuleParameter]
-
-    def convert(self) -> ObjectRuleUnionParameter:
-        return ObjectRuleUnionParameter(
-            members=[
-                [parameter.convert() for parameter in self.parameters],
-                []
-            ]
-        )
-
-
-class JsonObjectRulePositionalParameterIntegerValue(BaseModel):
-    type: Annotated[
-        Literal[JsonObjectRulePositionalParameterValueType.INTEGER],
-        Field(default=JsonObjectRulePositionalParameterValueType.INTEGER)
-    ]
-
-    def convert(self) -> ObjectRulePositionalParameterIntegerValue:
-        return ObjectRulePositionalParameterIntegerValue()
-
-
-class JsonObjectRulePositionalParameterObjectValue(JsonObjectRule):
-    type: Annotated[
-        Literal[JsonObjectRulePositionalParameterValueType.OBJECT],
-        Field(default=JsonObjectRulePositionalParameterValueType.OBJECT)
-    ]
-
-    def convert(self) -> ObjectRulePositionalParameterObjectValue:
-        return ObjectRulePositionalParameterObjectValue(
+    def convert(self) -> ObjectRuleProperty:
+        return ObjectRuleProperty(
             name=self.name,
-            parameters=[parameter.convert() for parameter in self.parameters]
+            value=self.value.convert()
         )
 
 
-class JsonObjectRulePositionalParameterStringValue(BaseModel):
+class JsonObjectRule(BaseModel):
     type: Annotated[
-        Literal[JsonObjectRulePositionalParameterValueType.STRING],
-        Field(default=JsonObjectRulePositionalParameterValueType.STRING)
-    ]
-
-    def convert(self) -> ObjectRulePositionalParameterStringValue:
-        return ObjectRulePositionalParameterStringValue()
-
-
-JsonObjectRulePositionalParameterValue = Annotated[
-    Union[
-        JsonObjectRulePositionalParameterIntegerValue,
-        JsonObjectRulePositionalParameterObjectValue,
-        JsonObjectRulePositionalParameterStringValue
-    ],
-    Field(discriminator="type")
-]
-
-
-class JsonObjectRulePositionalParameter(BaseModel):
-    type: Annotated[
-        Literal[JsonObjectRuleParameterType.POSITIONAL],
-        Field(default=JsonObjectRuleParameterType.POSITIONAL)
+        Literal[JsonRuleType.OBJECT],
+        Field(
+            alias=_JSON_RULE_TYPE_ALIAS,
+            default=JsonRuleType.OBJECT
+        )
     ]
 
     name: str
-    value: Annotated[
-        list[JsonObjectRulePositionalParameterValue],
-        Field(default=[JsonObjectRulePositionalParameterStringValue()])
-    ]
+    properties: list[JsonObjectRuleProperty]
+    subobjects: list[JsonObjectRule] = []
 
-    def convert(self) -> ObjectRulePositionalParameter:
-        return ObjectRulePositionalParameter(
+    def convert(self) -> ObjectRule:
+        return ObjectRule(
             name=self.name,
-            value=[value.convert() for value in self.value]
+            properties=[prop.convert() for prop in self.properties],
+            subobjects=[rule.convert() for rule in self.subobjects]
         )
 
 
-class JsonObjectRuleUnionParameter(BaseModel):
+class JsonOptionalRule(BaseModel):
     type: Annotated[
-        Literal[JsonObjectRuleParameterType.UNION],
-        Field(default=JsonObjectRuleParameterType.UNION)
+        Literal[JsonRuleType.OPTIONAL],
+        Field(
+            alias=_JSON_RULE_TYPE_ALIAS,
+            default=JsonRuleType.OPTIONAL
+        )
     ]
 
-    members: list[list[JsonObjectRuleParameter]]
+    value: JsonRule
 
-    def convert(self) -> ObjectRuleUnionParameter:
-        return ObjectRuleUnionParameter(
-            members=[
-                [parameter.convert() for parameter in member]
-                for member in self.members
-            ]
+    def convert(self) -> ObjectRule:
+        return OptionalRule(self.value.convert())
+
+
+class JsonStringRule(BaseModel):
+    type: Annotated[
+        Literal[JsonRuleType.STRING],
+        Field(
+            alias=_JSON_RULE_TYPE_ALIAS,
+            default=JsonRuleType.STRING
         )
+    ]
+
+    def convert(self) -> ObjectRule:
+        return StringRule()
 
 
-JsonObjectRuleParameter = Annotated[
+class JsonTupleRule(BaseModel):
+    type: Annotated[
+        Literal[JsonRuleType.TUPLE],
+        Field(
+            alias=_JSON_RULE_TYPE_ALIAS,
+            default=JsonRuleType.TUPLE
+        )
+    ]
+
+    values: list[JsonRule]
+
+    def convert(self) -> ObjectRule:
+        return TupleRule(values=[rule.convert() for rule in self.values])
+
+
+class JsonUnionRule(BaseModel):
+    type: Annotated[
+        Literal[JsonRuleType.UNION],
+        Field(
+            alias=_JSON_RULE_TYPE_ALIAS,
+            default=JsonRuleType.UNION
+        )
+    ]
+
+    values: list[JsonRule]
+
+    def convert(self) -> ObjectRule:
+        return UnionRule(values=[rule.convert() for rule in self.values])
+
+
+JsonRule = Annotated[
     Union[
-        JsonObjectRuleLiteralParameter,
-        JsonObjectRuleOptionalParameter,
-        JsonObjectRulePositionalParameter,
-        JsonObjectRuleUnionParameter
+        JsonIntegerRule,
+        JsonLiteralRule,
+        JsonObjectRule,
+        JsonOptionalRule,
+        JsonStringRule,
+        JsonTupleRule,
+        JsonUnionRule
     ],
     Field(discriminator="type")
 ]
@@ -192,7 +174,7 @@ def load(
     base_uri: str | None = None
 ) -> ObjectRule:
     stream = StringIO(readable) if isinstance(readable, str) else readable
-    data = jsonref.load(stream, base_uri=base_uri, merge_props=True)
+    data = jsonref.load(stream, base_uri=base_uri)
     rule = JsonObjectRule.model_validate(data).convert()
 
     return rule
@@ -204,7 +186,7 @@ def load_file(file: Path) -> ObjectRule:
 
 
 def load_all(
-    directory: Path = _DEFAULT_JSON_RULE_DIRECTORY
+    directory: Path = _DEFAULT_JSON_OBJECT_RULE_DIRECTORY
 ) -> list[ObjectRule]:
     if not directory.is_dir() or not directory.exists():
         raise ValueError(f"'{directory}' is not an existing directory")

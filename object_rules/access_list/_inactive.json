@@ -1,0 +1,7 @@
+{
+  "$type": "optional",
+  "value": {
+    "$type": "literal",
+    "value": "inactive"
+  }
+}

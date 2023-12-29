@@ -1,0 +1,110 @@
+{
+  "name": "access-list",
+  "properties": [
+    {
+      "name": "name",
+      "value": {
+        "$type": "string"
+      }
+    },
+    {
+      "name": "line",
+      "value": {
+        "$ref": "../_line.json"
+      }
+    },
+    {
+      "name": "type",
+      "value": {
+        "$type": "literal",
+        "value": "extended"
+      }
+    },
+    {
+      "name": "access",
+      "value": {
+        "$ref": "../_access.json"
+      }  
+    },
+    {
+      "name": "protocol",
+      "value": {
+        "$type": "union",
+        "values": [
+          {
+            "$type": "literal",
+            "value": "tcp"
+          },
+          {
+            "$type": "literal",
+            "value": "udp"
+          },
+          {
+            "$type": "literal",
+            "value": "sctp"
+          }
+        ]
+      }
+    },
+    {
+      "name": "user",
+      "value": {
+        "$ref": "../_user.json"
+      }
+    },
+    {
+      "name": "source_security_group",
+      "value": {
+        "$ref": "../_security_group.json"
+      }
+    },
+    {
+      "name": "source_address",
+      "value": {
+        "$ref": "../_address.json"
+      }
+    },
+    {
+      "name": "source_port",
+      "value": {
+        "$ref": "../_port.json"
+      }
+    },
+    {
+      "name": "destination_security_group",
+      "value": {
+        "$ref": "../_security_group.json"
+      }
+    },
+    {
+      "name": "destination_address",
+      "value": {
+        "$ref": "../_address.json"
+      }
+    },
+    {
+      "name": "destination_port",
+      "value": {
+        "$ref": "../_port.json"
+      }
+    },
+    {
+      "name": "log",
+      "value": {
+        "$ref": "../_log.json"
+      }
+    },
+    {
+      "name": "time_range",
+      "value": {
+        "$ref": "../_time_range.json"
+      }
+    },
+    {
+      "name": "inactive",
+      "value": {
+        "$ref": "../_inactive.json"
+      }
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "$type": "optional",
+  "value": {
+    "$type": "union",
+    "values": [
+      {
+        "$type": "object",
+        "name": "object-group-user",
+        "properties": [
+          {
+            "name": "name",
+            "value": {
+              "$type": "string"
+            }
+          }
+        ]
+      },
+      {
+        "$type": "object",
+        "name": "user",
+        "properties": [
+          {
+            "name": "name",
+            "value": {
+              "$type": "union",
+              "values": [
+                {
+                  "$type": "literal",
+                  "value": "any"
+                },
+                {
+                  "$type": "literal",
+                  "value": "none"
+                },
+                {
+                  "$type": "string"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "$type": "object",
+        "name": "user-group",
+        "properties": [
+          {
+            "name": "name",
+            "value": {
+              "$type": "string"
+            }
+          }
+        ]
+      }
+    ] 
+  }
+}

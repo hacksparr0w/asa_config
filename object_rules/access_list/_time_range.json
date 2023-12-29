@@ -1,0 +1,15 @@
+{
+  "$type": "optional",
+  "value": {
+    "$type": "object",
+    "name": "time-range",
+    "properties": [
+      {
+        "name": "name",
+        "value": {
+          "$type": "string"
+        }
+      }
+    ]
+  }
+}

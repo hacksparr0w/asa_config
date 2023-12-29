@@ -1,0 +1,15 @@
+{
+  "$type": "optional",
+  "value": {
+    "$type": "object",
+    "name": "line",
+    "properties": [
+      {
+        "name": "number",
+        "value": {
+          "$type": "integer"
+        }
+      }
+    ]
+  }
+}

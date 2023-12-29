@@ -1,0 +1,72 @@
+{
+  "$type": "optional",
+  "value": {
+    "$type": "union",
+    "values": [
+      {
+        "$type": "object",
+        "name": "lt",
+        "properties": [
+          {
+            "name": "value",
+            "value": { "$type": "integer" }
+          }
+        ]
+      },
+      {
+        "$type": "object",
+        "name": "gt",
+        "properties": [
+          {
+            "name": "value",
+            "value": { "$type": "integer" }
+          }
+        ]
+      },
+      {
+        "$type": "object",
+        "name": "eq",
+        "properties": [
+          {
+            "name": "value",
+            "value": { "$type": "integer" }
+          }
+        ]
+      },
+      {
+        "$type": "object",
+        "name": "neq",
+        "properties": [
+          {
+            "name": "value",
+            "value": { "$type": "integer" }
+          }
+        ]
+      },
+      {
+        "$type": "object",
+        "name": "range",
+        "properties": [
+          {
+            "name": "start",
+            "value": { "$type": "integer" }
+          },
+          {
+            "name": "stop",
+            "value": { "$type": "integer" }
+          }
+        ]
+      },
+      {
+        "$type": "object",
+        "name": "object-group",
+        "properties": [
+          {
+            "name": "name",
+            "value": { "$type": "string" }
+          }
+        ]
+      }
+    ]
+  }
+}

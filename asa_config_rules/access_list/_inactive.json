@@ -1,9 +1,0 @@
-{
-  "type": "optional",
-  "parameters": [
-    {
-      "type": "literal",
-      "value": "inactive"
-    }
-  ]
-}

@@ -1,0 +1,54 @@
+{
+  "$type": "optional",
+  "value": {
+    "$type": "object",
+    "name": "log",
+    "properties": [
+      {
+        "name": "options",
+        "value": {
+          "$type": "optional",
+          "value": {
+            "$type": "union",
+            "values": [
+              {
+                "$type": "tuple",
+                "values": [
+                  {
+                    "$type": "optional",
+                    "value": {
+                      "$type": "integer"
+                    }
+                  },
+                  {
+                    "$type": "optional",
+                    "value": {
+                      "$type": "object",
+                      "name": "interval",
+                      "properties": [
+                        {
+                          "name": "seconds",
+                          "value": {
+                            "$type": "integer"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "$type": "literal",
+                "value": "disable"
+              },
+              {
+                "$type": "literal",
+                "value": "default"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

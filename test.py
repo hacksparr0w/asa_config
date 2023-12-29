@@ -1,4 +1,4 @@
-from asa_config._rule import match
+from asa_config._object import match
 from asa_config.json_rule import load_all
 
 from devtools import pprint
