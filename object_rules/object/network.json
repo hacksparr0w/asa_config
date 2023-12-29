@@ -1,0 +1,42 @@
+{
+  "name": "object",
+  "children": [
+    {
+      "name": "host",
+      "properties": [
+        {
+          "name": "value",
+          "value": {
+            "$type": "string"
+          }
+        }
+      ]
+    },
+    {
+      "name": "description",
+      "properties": [
+        {
+          "name": "value",
+          "value": {
+            "$type": "text"
+          }
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "type",
+      "value": {
+        "$type": "literal",
+        "value": "network"
+      }
+    },
+    {
+      "name": "name",
+      "value": {
+        "$type": "string"
+      }
+    }
+  ]
+}

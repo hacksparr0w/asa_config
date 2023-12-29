@@ -1,30 +1,34 @@
 from __future__ import annotations
 
-from io import StringIO, TextIOBase
-
 from pydantic import BaseModel
 
+from ._argument import ArgumentGroup
+from ._io import Readable, get_stream
 
-class ObjectArgumentReadError(Exception):
+
+__all__ = (
+    "ArgumentReadError",
+    "IndentationError",
+
+    "load"
+)
+
+
+class ArgumentReadError(Exception):
     pass
 
 
-class IndentationError(ObjectArgumentReadError):
+class IndentationError(ArgumentReadError):
     pass
 
 
-class ObjectArguments(BaseModel):
-    arguments: list[str]
-    subarguments: list[ObjectArguments]
-
-
-class _ObjectArgumentChunk(BaseModel):
+class _ArgumentEntry(BaseModel):
     arguments: list[str]
     indentation_level: int
 
 
 def _read_indentation(
-    line: str,
+    text: str,
     indentation_string: str | None
 ) -> tuple[int, int, str | None]:
     index = 0
@@ -35,7 +39,7 @@ def _read_indentation(
     whitespaces = ""
 
     while True:
-        current_character = line[index]
+        current_character = text[index]
 
         if current_character not in (" ", "\t"):
             break
@@ -64,93 +68,96 @@ def _read_indentation(
     return indentation_level, index, indentation_string
 
 
-def _group_chunks(
-    chunks: list[_ObjectArgumentChunk],
+def _group_entries(
+    entries: list[_ArgumentEntry],
     current_indentation_level: int = 0
-) -> list[ObjectArguments]:
-    result = []
+) -> list[ArgumentGroup]:
+    groups = []
 
-    if not chunks:
-        return result
+    if not entries:
+        return groups
 
-    current_chunk = chunks[0]
-    next_chunk = None
-    subchunks = []
+    current_entry = entries[0]
+    next_entry = None
+    children = []
 
-    if not current_chunk.indentation_level == current_indentation_level:
+    if not current_entry.indentation_level == current_indentation_level:
         raise ValueError("Indentation mismatch")
 
     index = 1
 
     def finalize():
-        arguments = ObjectArguments(
-            arguments=current_chunk.arguments,
-            subarguments=_group_chunks(
-                subchunks,
+        group = ArgumentGroup(
+            root=current_entry.arguments,
+            children=_group_entries(
+                children,
                 current_indentation_level + 1
             )
         )
 
-        result.append(arguments)
+        groups.append(group)
 
     while True:
-        if index == len(chunks):
+        if index == len(entries):
             finalize()
 
-            return result
+            return groups
 
-        next_chunk = chunks[index]
+        next_entry = entries[index]
 
-        if next_chunk.indentation_level == current_indentation_level:
+        if next_entry.indentation_level == current_indentation_level:
             finalize()
 
-            subchunks = []
-            current_chunk = next_chunk
+            children = []
+            current_entry = next_entry
             index += 1
-
-            continue
-        elif next_chunk.indentation_level > current_indentation_level:
-            subchunks.append(next_chunk)
+        elif next_entry.indentation_level > current_indentation_level:
+            children.append(next_entry)
 
             index += 1
-
-            continue
         else:
             raise ValueError("Unexpected indentation level")
 
 
-def read(readable: TextIOBase | str) -> list[ObjectArguments]:
-    stream = StringIO(readable) if isinstance(readable, str) else readable
-    chunks = []
+def _read_entries(readable: Readable) -> list[_ArgumentEntry]:
+    stream = get_stream(readable)
+    entries = []
 
     previous_indentation_level = 0
     previous_indentation_string = None
 
     while True:
-        line = stream.readline()
+        text = stream.readline()
 
-        if not line:
+        if not text:
             break
 
-        if line.isspace():
+        if text.isspace():
             continue
 
         current_indentation_level, index, current_indentation_string = \
-            _read_indentation(line, previous_indentation_string)
+            _read_indentation(text, previous_indentation_string)
 
         if current_indentation_level > previous_indentation_level + 1:
             raise IndentationError
 
-        arguments = line[index:].rstrip().split(" ")
+        arguments = text[index:].rstrip().split(" ")
 
-        chunk = _ObjectArgumentChunk(
+        entry = _ArgumentEntry(
             arguments=arguments,
             indentation_level=current_indentation_level
         )
 
-        chunks.append(chunk)
+        entries.append(entry)
 
         previous_indentation_level = current_indentation_level
         previous_indentation_string = current_indentation_string
 
-    return _group_chunks(chunks)
+    return entries
+
+
+def load(readable: Readable) -> list[ArgumentGroup]:
+    entries = _read_entries(readable)
+    groups = _group_entries(entries)
+
+    return groups

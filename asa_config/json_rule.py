@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from enum import StrEnum, auto
-from io import IOBase, StringIO
 from pathlib import Path
 from typing import Annotated, Union, Literal
 
@@ -9,15 +8,36 @@ import jsonref
 
 from pydantic import BaseModel, Field
 
-from ._object import (
+from ._io import Readable, get_stream
+from ._rule import (
     IntegerRule,
     LiteralRule,
     ObjectRule,
     ObjectRuleProperty,
     OptionalRule,
     StringRule,
+    TextRule,
     TupleRule,
     UnionRule
+)
+
+
+__all__ = (
+    "JsonIntegerRule",
+    "JsonLiteralRule",
+    "JsonObjectRule",
+    "JsonObjectRuleProperty",
+    "JsonOptionalRule",
+    "JsonRule",
+    "JsonRuleType",
+    "JsonStringRule",
+    "JsonTextRule",
+    "JsonTupleRule",
+    "JsonUnionRule",
+
+    "load",
+    "load_file",
+    "load_all"
 )
 
 
@@ -33,6 +53,7 @@ class JsonRuleType(StrEnum):
     OBJECT = auto()
     OPTIONAL = auto()
     STRING = auto()
+    TEXT = auto()
     TUPLE = auto()
     UNION = auto()
 
@@ -46,7 +67,7 @@ class JsonIntegerRule(BaseModel):
         )
     ]
 
-    def convert(self) -> ObjectRule:
+    def convert(self) -> IntegerRule:
         return IntegerRule()
 
 
@@ -61,7 +82,7 @@ class JsonLiteralRule(BaseModel):
 
     value: str
 
-    def convert(self) -> ObjectRule:
+    def convert(self) -> LiteralRule:
         return LiteralRule(value=self.value)
 
 
@@ -87,13 +108,13 @@ class JsonObjectRule(BaseModel):
 
     name: str
     properties: list[JsonObjectRuleProperty]
-    subobjects: list[JsonObjectRule] = []
+    children: list[JsonObjectRule] = []
 
     def convert(self) -> ObjectRule:
         return ObjectRule(
             name=self.name,
             properties=[prop.convert() for prop in self.properties],
-            subobjects=[rule.convert() for rule in self.subobjects]
+            children=[rule.convert() for rule in self.children]
         )
 
 
@@ -108,7 +129,7 @@ class JsonOptionalRule(BaseModel):
 
     value: JsonRule
 
-    def convert(self) -> ObjectRule:
+    def convert(self) -> UnionRule:
         return OptionalRule(self.value.convert())
 
 
@@ -121,8 +142,21 @@ class JsonStringRule(BaseModel):
         )
     ]
 
-    def convert(self) -> ObjectRule:
+    def convert(self) -> StringRule:
         return StringRule()
+
+
+class JsonTextRule(BaseModel):
+    type: Annotated[
+        Literal[JsonRuleType.TEXT],
+        Field(
+            alias=_JSON_RULE_TYPE_ALIAS,
+            default=JsonRuleType.TEXT
+        )
+    ]
+
+    def convert(self) -> TextRule:
+        return TextRule()
 
 
 class JsonTupleRule(BaseModel):
@@ -136,7 +170,7 @@ class JsonTupleRule(BaseModel):
 
     values: list[JsonRule]
 
-    def convert(self) -> ObjectRule:
+    def convert(self) -> TupleRule:
         return TupleRule(values=[rule.convert() for rule in self.values])
 
 
@@ -151,7 +185,7 @@ class JsonUnionRule(BaseModel):
 
     values: list[JsonRule]
 
-    def convert(self) -> ObjectRule:
+    def convert(self) -> UnionRule:
         return UnionRule(values=[rule.convert() for rule in self.values])
 
 
@@ -162,6 +196,7 @@ JsonRule = Annotated[
         JsonObjectRule,
         JsonOptionalRule,
         JsonStringRule,
+        JsonTextRule,
         JsonTupleRule,
         JsonUnionRule
     ],
@@ -170,10 +205,10 @@ JsonRule = Annotated[
 
 
 def load(
-    readable: IOBase | str,
+    readable: Readable,
     base_uri: str | None = None
 ) -> ObjectRule:
-    stream = StringIO(readable) if isinstance(readable, str) else readable
+    stream = get_stream(readable)
     data = jsonref.load(stream, base_uri=base_uri)
     rule = JsonObjectRule.model_validate(data).convert()
 

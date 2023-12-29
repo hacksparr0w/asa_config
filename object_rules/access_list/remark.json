@@ -1,0 +1,32 @@
+{
+  "name": "access-list",
+  "properties": [
+    {
+      "name": "name",
+      "value": {
+        "$type": "string"
+      }
+    },
+    {
+      "name": "line",
+      "value": {
+        "$ref": "./_line.json"
+      }
+    },
+    {
+      "name": "remark",
+      "value": {
+        "$type": "object",
+        "name": "remark",
+        "properties": [
+          {
+            "name": "value",
+            "value": {
+              "$type": "text"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

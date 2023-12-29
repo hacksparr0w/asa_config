@@ -2,7 +2,8 @@ from textwrap import dedent
 
 import pytest
 
-from asa_config._object_argument import ObjectArguments, read
+from asa_config._argument import ArgumentGroup
+from asa_config._argument_load import load
 
 
 @pytest.mark.parametrize(
@@ -13,14 +14,14 @@ from asa_config._object_argument import ObjectArguments, read
         (
             "access-list MY_ACL remark CH:aaa;DA:20230807;IM:aaa;RE:aaa;",
             [
-                ObjectArguments(
-                    arguments=[
+                ArgumentGroup(
+                    root=[
                         "access-list",
                         "MY_ACL",
                         "remark",
                         "CH:aaa;DA:20230807;IM:aaa;RE:aaa;",
                     ],
-                    subarguments=[]
+                    children=[]
                 )
             ]
         ),
@@ -33,26 +34,26 @@ from asa_config._object_argument import ObjectArguments, read
                 """
             ),
             [
-                ObjectArguments(
-                    arguments=[
+                ArgumentGroup(
+                    root=[
                         "object",
                         "network",
                         "HST_158.87.185.149"
                     ],
-                    subarguments=[
-                        ObjectArguments(
-                            arguments=[
+                    children=[
+                        ArgumentGroup(
+                            root=[
                                 "host",
                                 "158.87.185.149"
                             ],
-                            subarguments=[]
+                            children=[]
                         ),
-                        ObjectArguments(
-                            arguments=[
+                        ArgumentGroup(
+                            root=[
                                 "description",
                                 "VLAN1026_GSNI-FFM-SDE-IR-10"
                             ],
-                            subarguments=[]
+                            children=[]
                         )
                     ]
                 )
@@ -60,7 +61,7 @@ from asa_config._object_argument import ObjectArguments, read
         )
     ]
 )
-def test_read(input, expected):
-    result = read(input)
+def test_load(input, expected):
+    result = load(input)
 
     assert result == expected

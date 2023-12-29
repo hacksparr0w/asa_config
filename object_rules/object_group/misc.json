@@ -1,0 +1,65 @@
+{
+  "name": "object-group",
+  "children": [
+    {
+      "name": "network-object",
+      "properties": [
+        {
+          "name": "value",
+          "value": {
+            "$type": "object",
+            "name": "object",
+            "properties": [
+              {
+                "name": "name",
+                "value": {
+                  "$type": "string"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "type",
+      "value": {
+        "$type": "union",
+        "values": [
+          {
+            "$type": "literal",
+            "value": "protocol"
+          },
+          {
+            "$type": "literal",
+            "value": "network"
+          },
+          {
+            "$type": "literal",
+            "value": "icmp-type"
+          },
+          {
+            "$type": "literal",
+            "value": "security"
+          },
+          {
+            "$type": "literal",
+            "value": "user"
+          },
+          {
+            "$type": "literal",
+            "value": "network"
+          }
+        ]
+      }
+    },
+    {
+      "name": "name",
+      "value": {
+        "$type": "string"
+      }
+    }
+  ]
+}
