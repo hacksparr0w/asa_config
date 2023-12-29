@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from io import TextIOBase
+from io import StringIO, TextIOBase
 
 from pydantic import BaseModel
 
@@ -9,13 +9,13 @@ class ObjectArgumentReadError(Exception):
     pass
 
 
-class InvalidIndentation(ObjectArgumentReadError):
+class IndentationError(ObjectArgumentReadError):
     pass
 
 
 class ObjectArguments(BaseModel):
     arguments: list[str]
-    subarguments: ObjectArguments | None
+    subarguments: list[ObjectArguments]
 
 
 class _ObjectArgumentChunk(BaseModel):
@@ -44,7 +44,7 @@ def _read_indentation(
             indentation_character = current_character
         else:
             if current_character != indentation_character:
-                raise InvalidIndentation
+                raise IndentationError
 
         whitespaces += current_character
         index += 1
@@ -59,7 +59,7 @@ def _read_indentation(
     remainder = len(whitespaces) % len(indentation_string)
 
     if remainder != 0:
-        raise InvalidIndentation
+        raise IndentationError
 
     return indentation_level, index, indentation_string
 
@@ -109,16 +109,18 @@ def _group_chunks(
             index += 1
 
             continue
-
-        if next_chunk.indentation_level > current_indentation_level:
+        elif next_chunk.indentation_level > current_indentation_level:
             subchunks.append(next_chunk)
 
             index += 1
 
             continue
+        else:
+            raise ValueError("Unexpected indentation level")
 
 
-def read(stream: TextIOBase) -> list[ObjectArguments]:
+def read(readable: TextIOBase | str) -> list[ObjectArguments]:
+    stream = StringIO(readable) if isinstance(readable, str) else readable
     chunks = []
 
     previous_indentation_level = 0
@@ -137,7 +139,7 @@ def read(stream: TextIOBase) -> list[ObjectArguments]:
             _read_indentation(line, previous_indentation_string)
 
         if current_indentation_level > previous_indentation_level + 1:
-            raise InvalidIndentation
+            raise IndentationError
 
         arguments = line[index:].rstrip().split(" ")
 
