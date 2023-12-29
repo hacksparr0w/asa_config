@@ -14,7 +14,7 @@ def main():
             """
             object network HST_158.87.185.149
              host 158.87.185.149
-             description VLAN1026_GSNI-FFM-	SDE-IR-10
+             description VLAN1026_GSNI-FFM-SDE-IR-10
             object network HST_158.87.185.148
              host 158.87.185.148
              description defrvep01ir10wm
